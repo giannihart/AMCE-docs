@@ -1,0 +1,395 @@
+---
+title: User Guide
+icon: book
+---
+# DevScribe Documentation Template - User Guide
+
+DevScribe is a Next.js-based documentation platform that enables you to create, maintain, and deploy modern documentation websites with AI-powered search capabilities.
+
+## What You Get
+
+- **Modern documentation site** with responsive design and dark mode
+- **AI-powered chat** (AskAI) using Google's Gemini API with RAG (Retrieval-Augmented Generation)
+- **Rich MDX components** for interactive documentation
+- **Full-text search** with FlexSearch
+- **API reference support** with OpenAPI integration
+- **Changelog management** with categorization
+
+## Quick Start
+
+### Prerequisites
+
+<Callout type="info">
+Ensure you have Node.js 20 or higher installed on your system.
+</Callout>
+
+- Node.js 20+
+- npm or yarn
+- Google Generative AI API key (for AI chat features)
+
+### Installation
+
+<CodeGroup>
+  <CodeSnippet language="bash" title="npm">
+{`# Clone the repository
+git clone <your-repo-url>
+
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev`}
+  </CodeSnippet>
+  
+  <CodeSnippet language="bash" title="yarn">
+{`# Clone the repository
+git clone <your-repo-url>
+
+# Install dependencies
+yarn install
+
+# Run development server
+yarn dev`}
+  </CodeSnippet>
+</CodeGroup>
+
+Visit `http://localhost:3000` to see your documentation site.
+
+### Environment Setup
+
+Create a `.env.local` file in the root directory:
+
+<CodeSnippet language="bash" title=".env.local">
+{`GOOGLE_GENERATIVE_AI_API_KEY=your_api_key_here`}
+</CodeSnippet>
+
+<Callout type="tip">
+The API key is optional but required for the AI chat feature. Without it, the build process will skip embeddings generation.
+</Callout>
+
+## Project Structure
+
+<CodeSnippet language="text" showLineNumbers={true}>
+{`src/
+├── app/
+│   ├── (pages)/              # Documentation pages (MDX files)
+│   │   ├── introduction.mdx
+│   │   ├── quickstart/
+│   │   ├── api-reference/
+│   │   ├── changelog/
+│   │   ├── docs.json         # Navigation configuration
+│   │   └── openapi.json      # API specification
+│   ├── api/                  # API routes
+│   │   ├── chat/            # AI chat endpoint
+│   │   └── markdown/        # Markdown processing
+│   └── styles/              # Global styles and themes
+├── components/
+│   ├── layout/              # Layout components
+│   ├── mdx/                 # MDX custom components
+│   └── ui/                  # Shadcn/ui components
+├── lib/
+│   ├── embedder.ts          # RAG implementation
+│   └── docs-utils.ts        # Documentation utilities
+└── scripts/
+    ├── populate-embeddings.ts   # Generate AI embeddings
+    └── search-index-gen.ts      # Create search index`}
+</CodeSnippet>
+
+## Creating Content
+
+### Adding Documentation Pages
+
+Create MDX files in `src/app/(pages)/`:
+
+<CodeSnippet language="mdx" title="example-page.mdx">
+{`---
+title: Your Page Title
+description: Brief description
+icon: rocket
+---
+
+## Your Content Here
+
+Write your documentation using Markdown syntax and MDX components.`}
+</CodeSnippet>
+
+### Configuring Navigation
+
+Edit `src/app/(pages)/docs.json` to configure your site navigation:
+
+<CodeSnippet language="json" title="docs.json">
+{`{
+  "name": "devscribe",
+  "favicon": "/favicon.svg",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guides",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": ["introduction", "quickstart/guide"]
+          }
+        ]
+      }
+    ]
+  }
+}`}
+</CodeSnippet>
+
+**Navigation structure:**
+- **tabs**: Top-level navigation sections
+- **groups**: Sidebar sections within tabs
+- **pages**: Individual documentation pages (file paths relative to `(pages)` directory)
+- **dropdown**: Nested navigation items
+
+### Available MDX Components
+
+The template includes rich MDX components for interactive documentation:
+
+**Callouts**: Display important information with visual styling.
+
+<CodeSnippet language="mdx">
+{`<Callout type="info">
+Informational message about a feature.
+</Callout>`}
+</CodeSnippet>
+
+<Callout type="tip">
+Available types: `info`, `warning`, `error`, `success`, `tip`, `danger`
+</Callout>
+
+**Cards**: Create visual content blocks with icons and links.
+
+<CodeSnippet language="mdx">
+{`<Card title="Feature Name" description="Brief description" icon="star" href="/link">
+Card content here
+</Card>`}
+</CodeSnippet>
+
+**CardGroups**: Arrange multiple cards in a grid layout.
+
+<CodeSnippet language="mdx">
+{`<CardGroup cols={2} gap="md">
+  <Card title="Feature 1" icon="zap">Content</Card>
+  <Card title="Feature 2" icon="shield">Content</Card>
+</CardGroup>`}
+</CodeSnippet>
+
+**Tabs**: Display content in switchable tabs.
+
+<CodeSnippet language="mdx">
+{`<TabGroup>
+  <Tab title="JavaScript">
+    Code example in JavaScript
+  </Tab>
+  <Tab title="Python">
+    Code example in Python
+  </Tab>
+</TabGroup>`}
+</CodeSnippet>
+
+**Code Snippets**: Enhanced code blocks with syntax highlighting.
+
+<CodeSnippet language="mdx">
+{`<CodeSnippet language="typescript" title="example.ts" showLineNumbers={true} highlight="2,5-7">
+{\\\`export function example() {
+  return "code here"
+}\\\`}
+</CodeSnippet>`}
+</CodeSnippet>
+
+**Accordions**: Collapsible content sections.
+
+<CodeSnippet language="mdx">
+{`<Accordion title="Title" description="Description" defaultOpen={true}>
+Hidden content here
+</Accordion>`}
+</CodeSnippet>
+
+**Steps**: Create numbered tutorial steps.
+
+<CodeSnippet language="mdx">
+{`<Steps>
+  <Step title="Install">Installation instructions</Step>
+  <Step title="Configure">Configuration details</Step>
+</Steps>`}
+</CodeSnippet>
+
+**Parameter Fields**: Document API parameters.
+
+<CodeSnippet language="mdx">
+{`<ParameterField name="userId" type="string" required={true} default="guest">
+The unique user identifier.
+</ParameterField>`}
+</CodeSnippet>
+
+<Callout type="info">
+See `src/app/(pages)/quickstart/guide.mdx` for complete examples of all components.
+</Callout>
+
+## AI Chat Features
+
+### How It Works
+
+The AI chat uses RAG (Retrieval-Augmented Generation) to answer questions based on your documentation:
+
+1. Documentation files are embedded using Google's Gemini embedding model
+2. User questions are embedded and compared against documentation
+3. Relevant content is passed to Gemini 2.5 Flash for response generation
+4. Falls back to base model if no relevant documentation is found
+
+### Generating Embeddings
+
+Run this command whenever you add or update documentation:
+
+<CodeSnippet language="bash">
+{`npm run generate-embeddings`}
+</CodeSnippet>
+
+<Callout type="success">
+This creates `/data/embeddings.json` which stores document embeddings (up to 8000 characters per document).
+</Callout>
+
+### Embedding Configuration
+
+The embedding system is implemented in `src/lib/embedder.ts` and uses:
+- **Embedding model**: `models/text-embedding-004`
+- **Generation model**: `gemini-2.5-flash`
+- **Search method**: Cosine similarity
+- **Top results**: 2 most relevant documents
+
+The chat endpoint is located at `src/app/api/chat/route.ts`.
+
+## Building and Deployment
+
+### Build Commands
+
+<CodeGroup>
+  <CodeSnippet language="bash" title="Build & Run">
+{`# Generate search index and embeddings, then build
+npm run build
+
+# Start production server
+npm start`}
+  </CodeSnippet>
+  
+  <CodeSnippet language="bash" title="Development">
+{`# Type checking
+npm run type
+
+# Code formatting
+npm run format`}
+  </CodeSnippet>
+</CodeGroup>
+
+<Callout type="info">
+The build process automatically runs:
+1. `generate-search` - Creates FlexSearch index
+2. `generate-embeddings` - Generates AI embeddings
+3. Next.js build
+</Callout>
+
+### Deployment
+
+The template is optimized for Vercel deployment:
+
+1. Push your repository to GitHub
+2. Import project in Vercel
+3. Add `GOOGLE_GENERATIVE_AI_API_KEY` environment variable
+4. Deploy
+
+<Callout type="tip">
+The configuration in `next.config.ts` includes image optimization for external sources and scroll restoration settings.
+</Callout>
+
+## Customization
+
+### Styling and Themes
+
+Styles are located in `src/app/styles/`:
+- `globals.css` - Base styles
+- `variables.css` - Theme variables
+- `variables.default.css` - Default theme colors
+
+<Callout type="info">
+The site uses Tailwind CSS 4 with custom CSS variables for theming. Dark mode is supported via `next-themes`.
+</Callout>
+
+### Site Configuration
+
+Key configuration files:
+- `src/app/(pages)/docs.json` - Navigation, site name, buttons
+- `next.config.ts` - Next.js settings
+- `tailwind.config.*` - Tailwind customization
+- `components.json` - Shadcn/ui configuration
+
+### Adding Changelogs
+
+Create MDX files in `src/app/(pages)/changelog/`:
+
+<CodeSnippet language="mdx" title="changelog/version-2.0.mdx">
+{`---
+title: Version 2.0 Release
+date: 2025-01-15
+category: release
+---
+
+## What's New
+
+List your changes here.`}
+</CodeSnippet>
+
+<Callout type="tip">
+Categories are configured in `docs.json` under `changelogCategories`.
+</Callout>
+
+## Development Tips
+
+<Callout type="warning">
+**Important notes:**
+- All documentation files must be in `src/app/(pages)` directory
+- File paths in `docs.json` are relative to `(pages)` directory (without `.mdx` extension)
+- Regenerate embeddings after updating documentation
+- Code examples with curly braces must use template literals: `{\`code here\`}`
+- The build skips embeddings if no API key is provided
+</Callout>
+
+**Available scripts:**
+
+<CodeGroup>
+  <CodeSnippet language="bash" title="Development">
+{`# Development with Turbopack
+npm run dev
+
+# Run ESLint
+npm run lint
+
+# TypeScript type checking
+npm run type`}
+  </CodeSnippet>
+  
+  <CodeSnippet language="bash" title="Build Tools">
+{`# Rebuild search index only
+npm run generate-search
+
+# Rebuild embeddings only
+npm run generate-embeddings`}
+  </CodeSnippet>
+</CodeGroup>
+
+## Technology Stack
+
+- **Framework**: Next.js 15.5.2 with App Router and React 19
+- **Styling**: Tailwind CSS 4, Shadcn/ui components, Radix UI primitives
+- **Content**: MDX 3.0, Marked for markdown parsing
+- **AI**: Google Generative AI (Gemini), custom RAG implementation
+- **Search**: FlexSearch for local search indexing
+- **Syntax Highlighting**: Shiki 3.7
+- **Backend**: Supabase (included)
+
+## Support and Documentation
+
+<Callout type="success">
+For detailed component examples and syntax, refer to the built-in guide at `/quickstart/guide` in your running instance. The guide includes preview and syntax tabs for all available MDX components.
+</Callout>
