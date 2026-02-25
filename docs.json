@@ -13,7 +13,6 @@
               "group": "Get Started",
               "pages": [
                 "introduction"
-                "test"
               ]
             },
             {
@@ -21,6 +20,7 @@
               "pages": [
                 "quickstart/guide",
                 "quickstart/docs-json",
+                "quickstart/test",
                 {
                   "dropdown": "Dropdown Example",
                   "pages": [
